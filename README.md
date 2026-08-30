@@ -101,3 +101,9 @@ Copy-Item "$src\config.md" "$env:USERPROFILE\.claude\skills\"
 - `config.md` 里填好队号、确认投稿格式（Word/LaTeX）
 - 重启后说触发词能命中（见 2.5）
 - 代码模板能跑：`cd modmind-code\templates\code && py 优化.py`（应输出 LP max 313.33 / 0-1 8.0 / NLP 0.0）
+
+## 作者
+### yqOffline
+
+## 声明
+### ModMind仍处于开发实验阶段，如有错误请多海涵
