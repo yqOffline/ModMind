@@ -34,10 +34,10 @@ $src = "C:\Users\25154\Documents\Obsidian Vault\.claude\skills"
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
 
 # 2) 复制 8 个技能文件夹
-Copy-Item -Recurse `
+Copy-Item -Recurse -Destination "$env:USERPROFILE\.claude\skills\" `
   "$src\modmind", "$src\modmind-read", "$src\modmind-model", `
   "$src\modmind-data", "$src\modmind-code", "$src\modmind-test", `
-  "$src\modmind-plot", "$src\modmind-write" "$env:USERPROFILE\.claude\skills\"
+  "$src\modmind-plot", "$src\modmind-write"
 
 # 3) 复制全局配置（投稿格式 / 兜底路径 / 队号）
 Copy-Item "$src\config.md" "$env:USERPROFILE\.claude\skills\"

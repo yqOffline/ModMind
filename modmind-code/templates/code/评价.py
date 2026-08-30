@@ -76,7 +76,8 @@ def gray_relation(X, ref=None, rho=0.5):
     # min-max 归一化；常量列差异记为 0
     Xn = np.where(denom > eps, (X - xmin) / np.where(denom > eps, denom, 1.0), 0.0)
     if ref is None:
-        refn = np.ones(X.shape[1])  # 越大越优 → 归一化后参考序列全为 1
+        # 越大越优 → 参考序列取各列最大值（归一化后为 1）；常量列（denom≤eps）参考取 0，使 delta=0
+        refn = np.where(denom > eps, 1.0, 0.0)
     else:
         refn = np.where(denom > eps, (np.asarray(ref, float) - xmin) / np.where(denom > eps, denom, 1.0), 0.0)
     delta = np.abs(refn - Xn)
