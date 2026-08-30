@@ -33,9 +33,12 @@ def ahp(judge):
 def entropy_weight(X):
     """X: m×n 正向化指标矩阵。返回权重 w（和=1）。"""
     X = np.array(X, float)
-    # min-max 归一化到 [0,1]，再平移避免 ln(0)
+    # min-max 归一化到 [0,1]；常量列记为 0（熵权为 0）
     xmin, xmax = X.min(axis=0), X.max(axis=0)
-    Xn = (X - xmin) / (xmax - xmin + 1e-12) + 1e-6
+    denom = xmax - xmin
+    Xn = np.where(denom > 0, (X - xmin) / np.where(denom > 0, denom, 1.0), 0.0)
+    # 只给 0 值加小量防 ln(0)，不整体平移（避免抹平分布）
+    Xn = np.where(Xn == 0, 1e-6, Xn)
     p = Xn / Xn.sum(axis=0)
     m = X.shape[0]
     e = -(p * np.log(p)).sum(axis=0) / np.log(m)
@@ -64,18 +67,24 @@ def topsis(X, w):
 def gray_relation(X, ref=None, rho=0.5):
     """X: m×n 比较序列矩阵（每行一个对象）。
     ref: 参考序列（默认取各列最优，即越大越优）。
-    返回各对象的关联度 r_i（越大越优）。"""
+    返回各对象的关联度 r_i（越大越优）。
+    min-max 归一化到 [0,1]，规避 ref=0 除零与常量列 0/0=NaN。"""
     X = np.array(X, float)
+    eps = 1e-12
+    xmin, xmax = X.min(axis=0), X.max(axis=0)
+    denom = xmax - xmin
+    # min-max 归一化；常量列差异记为 0
+    Xn = np.where(denom > eps, (X - xmin) / np.where(denom > eps, denom, 1.0), 0.0)
     if ref is None:
-        ref = X.max(axis=0)  # 越大越优的参考序列
-    # 初值化归一化
-    Xn = X / ref
-    refn = ref / ref
+        refn = np.ones(X.shape[1])  # 越大越优 → 归一化后参考序列全为 1
+    else:
+        refn = np.where(denom > eps, (np.asarray(ref, float) - xmin) / np.where(denom > eps, denom, 1.0), 0.0)
     delta = np.abs(refn - Xn)
     dmin, dmax = delta.min(), delta.max()
+    if dmax < eps:  # 所有序列与参考完全一致 → 关联度均为 1
+        return np.ones(X.shape[0])
     xi = (dmin + rho * dmax) / (delta + rho * dmax)
-    r = xi.mean(axis=1)
-    return r
+    return xi.mean(axis=1)
 
 
 # ---------- 5. 组合赋权（主客观） ----------
