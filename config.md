@@ -6,6 +6,7 @@
 
 - **格式：Word**（`modmind-write` 产出 Word 结构；公式用 Word 公式编辑器或 LaTeX 公式图）
 - 若改用 LaTeX：把上一行改成 LaTeX，write 阶段改为产出 `.tex` 全文。
+- 官方电子版要求：Word 或 PDF 之一（**建议 PDF**），≤20MB、不压缩、**第一页必须是摘要页**。
 
 ## 2. 队伍信息
 
